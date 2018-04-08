@@ -26,7 +26,7 @@ with pm.Model() as model:
 
 #Plot these traces
 pm.traceplot(trace)
-plt.savefig('traceplot.pdf')
+plt.savefig('Plots/traceplot.pdf')
 #Make a KDE approximation to the sigma posterior
 xx=np.linspace(0.0, 30.0, 1000)
 kde_approximation=stats.gaussian_kde(trace['sig'])
@@ -47,7 +47,7 @@ ax.set_yticks([])
 ax.set_xlabel(r'$\sigma$ (kms$^{-1}$)')
 
 fig.tight_layout()
-fig.savefig('pdf.pdf')
+fig.savefig('Plots/pdf.pdf')
 
 
 
@@ -125,7 +125,7 @@ with mdl_signoise:
 
 #Plot things
 pm.traceplot(traces_signoise)
-plt.savefig('outlier_traceplot.pdf')
+plt.savefig('Plots/outlier_traceplot.pdf')
 
 
 fig, ax=plt.subplots(figsize=(10, 6))
@@ -140,7 +140,7 @@ ax.set_title('Outlier Probabilities')
 ax.set_xlabel(r'$p_{\mathrm{outlier}}$')
 ax.set_ylabel('Data point')
 fig.tight_layout()
-fig.savefig('outlier_probabilities.pdf')
+fig.savefig('Plots/outlier_probabilities.pdf')
 
 
 
@@ -162,7 +162,7 @@ ax.set_yticks([])
 ax.set_xlabel(r'$\sigma$ (kms$^{-1}$)')
 
 fig.tight_layout()
-fig.savefig('pdf_outliers.jpg')
+fig.savefig('Plots/pdf_outliers.jpg')
 
 #Compare the two 
 fig, ax=plt.subplots(figsize=(10, 6))
@@ -186,6 +186,6 @@ ax.set_yticks([])
 ax.set_xlabel(r'$\sigma$ (kms$^{-1}$)')
 ax.legend()
 fig.tight_layout()
-fig.savefig('pdf_comparison.pdf')
+fig.savefig('Plots/pdf_comparison.pdf')
 plt.show()
 

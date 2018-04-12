@@ -12,13 +12,14 @@ np.random.seed(123)
 def draws_from_normal(data, uncertainties):
     #pymc3 model
     with pm.Model() as model:
-        sig_hyperprior=pm.Uniform('sig', 0.0, 50.0)
-        vel_hyperprior=pm.Normal('vel', 0.0, 50.0)
+        sig_prior=pm.HalfNormal('sig',50)
+        vel_prior=pm.Normal('vel', 0.0, 50.0)
+        
 
-        vel_tracers=pm.Normal('vel-tracers', mu=vel_hyperprior, sd=uncertainties, shape=len(data))
+        vel_tracers=pm.Normal('vel-tracers', mu=vel_prior, sd=uncertainties, shape=len(data))
 
 
-        measurements=pm.Normal('measurements', mu=vel_tracers, sd=sig_hyperprior, observed=data)
+        measurements=pm.Normal('measurements', mu=vel_tracers, sd=sig_prior, observed=data)
         trace=pm.sample(2000, tune=10000)
 
 
@@ -48,16 +49,17 @@ def draws_from_normal(data, uncertainties):
     fig.tight_layout()
     fig.savefig('Plots/pdf.pdf')
 
-    return kde_approximation
+    return trace, kde_approximation
 
 
 def draws_from_StudentT(data, uncertainties):
     #pymc3 model
     with pm.Model() as model:
-        sig_prior=pm.Uniform('sig', 0.0, 50.0)
+        sig_prior=pm.HalfNormal('sig',50)
         vel_prior=pm.Normal('vel', 0.0, 50.0)
-        lognu_prior=pm.Uniform('lognu', 1, 20)
+        lognu_prior=pm.Uniform('lognu', -2.0, np.log(20))
         nu_prior=pm.Deterministic('nu', pm.math.exp(lognu_prior))
+        
 
         vel_tracers=pm.Normal('vel-tracers', mu=vel_prior, sd=uncertainties, shape=len(data))
 
@@ -70,6 +72,7 @@ def draws_from_StudentT(data, uncertainties):
     #Plot these traces
     pm.traceplot(trace)
     plt.savefig('Plots/studentT_traceplot.pdf')
+    plt.savefig('Plots/studentT_traceplot.jpg')
     #Make a KDE approximation to the sigma posterior
     xx=np.linspace(0.0, 30.0, 1000)
     kde_approximation=stats.gaussian_kde(trace['sig'])
@@ -91,8 +94,9 @@ def draws_from_StudentT(data, uncertainties):
 
     fig.tight_layout()
     fig.savefig('Plots/studentT_pdf.pdf')
+    fig.savefig('Plots/studentT_pdf.jpg')
 
-    return kde_approximation
+    return trace, kde_approximation
 
 
 
@@ -246,6 +250,6 @@ if __name__=='__main__':
     x, data, uncertainties=np.genfromtxt('vd_Data.txt', unpack=True)
     xx=np.linspace(0.0, 30.0, 1000)
 
-    kde_approximation_Gaussian=draws_from_normal(data, uncertainties)
+    trace_Gaussian, kde_approximation_Gaussian=draws_from_normal(data, uncertainties)
 
-    kde_approximation_studentT=draws_from_StudentT(data, uncertainties)
+    trace_studentT, kde_approximation_studentT=draws_from_StudentT(data, uncertainties)

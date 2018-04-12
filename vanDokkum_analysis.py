@@ -247,7 +247,17 @@ if __name__=='__main__':
 
 
     #Load the data
-    x, data, uncertainties=np.genfromtxt('vd_Data.txt', unpack=True)
+    id_number, r, v, v_min, v_max=np.genfromtxt('vd_Data.txt', unpack=True)
+
+    #Assume gaussian uncertainties
+    #This is probably okay because almost all the values are pretty symmetric
+    #Should investigate how to do this better!
+    uncertainties=np.mean(np.column_stack((v_min, v_max)), axis=1)
+
+    mean_from_paper=1803.0
+    inverse_variance_weighted_mean=np.sum(v/uncertainties**2)/np.sum(1./uncertainties**2)
+
+    data=v-mean_from_paper
     xx=np.linspace(0.0, 30.0, 1000)
 
     trace_Gaussian, kde_approximation_Gaussian=draws_from_normal(data, uncertainties)
